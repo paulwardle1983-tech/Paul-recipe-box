@@ -54,28 +54,56 @@ function parseJsonLd(obj){
   }
   return null;
 }
+function detectCategory(text,name){
+  const t=(text+' '+name).toLowerCase();
+  if(/christmas|xmas|festive|boxing day/.test(t))return 'Christmas';
+  if(/breakfast|porridge|overnight oats|pancake|pancakes|toast/.test(t))return 'Breakfast';
+  if(/curry|masala|dhal|dal\b|korma|tikka/.test(t))return 'Curry';
+  if(/fakeaway|naan|flatbread pizza|takeaway|satay|stir[- ]?fry|pad thai|teriyaki|chow mein|fajita|burger|pizza/.test(t))return 'Fakeaway';
+  if(/quick|under 30|20 minute|15 minute|30 minute/.test(t))return 'Quick';
+  return 'Other';
+}
 function parseRecipeText(text){
   text=cleanText(text); if(!text)return null;
-  try{const parsed=JSON.parse(text); const r=parseJsonLd(parsed); if(r)return r}catch(e){}
-  const lines=text.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  try{const parsed=JSON.parse(text); const r=parseJsonLd(parsed); if(r){r.cat=detectCategory(text,r.name);r.vegan=/vegan|plant[- ]based|dairy[- ]free|egg[- ]free/i.test(text);return r}}catch(e){}
+  // Remove common copied-source clutter such as bare social links and reference markers.
+  text=text.replace(/\s*\[\d+\]\s*\((?:https?:\/\/)[^)]*\)/gi,' ').replace(/https?:\/\/\S+/gi,'').replace(/\s{2,}/g,' ').trim();
+  const rawLines=text.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  let lines=rawLines.map(x=>x.replace(/^\[\d+\]\s*/,'').trim()).filter(Boolean);
   let name=lines[0]||'Imported recipe', cat='Other', time=30, serves=2, ingredients=[], method=[], section='';
+  // Pull obvious metadata from the pasted text.
+  const all=text.replace(/\n/g,' ');
+  const explicitTimes=[];
+  for(const m of all.matchAll(/(?:total\s*time|cooking\s*time|cook\s*time|prep\s*time|ready\s*in)\s*[:\-]?\s*(\d+)\s*(?:mins?|minutes?)/ig)) explicitTimes.push(Number(m[1]));
+  if(explicitTimes.length) time=Math.max(...explicitTimes);
+  const serveMatch=all.match(/(?:serves?|servings?|yield|makes)\s*[:\-]?\s*(\d+)(?:\s*(?:people|servings?|portions?))?/i); if(serveMatch)serves=Number(serveMatch[1]);
   for(const line of lines){
     const low=line.toLowerCase();
-    const tm=line.match(/(?:total|cook|cooking|prep)?\s*time\s*[:\-]?\s*(\d+)\s*(?:mins?|minutes?)/i)||line.match(/(\d+)\s*(?:mins?|minutes?)/i); if(tm)time=Number(tm[1]);
-    const sm=line.match(/(?:serves?|servings?|yield)\s*[:\-]?\s*(\d+)/i); if(sm)serves=Number(sm[1]);
-    if(/^(ingredients?|what you need)\b/i.test(line)){section='ingredients';continue}
-    if(/^(method|instructions?|directions?|steps?)\b/i.test(line)){section='method';continue}
+    const tm=line.match(/(?:total|cook|cooking|prep|roast|bake|air fry|simmer|warm)?\s*time?\s*[:\-]?\s*(\d+)\s*(?:mins?|minutes?)/i)||line.match(/(?:for|about|around|approximately)\s+(\d+)\s*(?:mins?|minutes?)/i);
+    if(tm && !explicitTimes.length)explicitTimes.push(Number(tm[1]));
+    const sm=line.match(/(?:serves?|servings?|yield|makes)\s*[:\-]?\s*(\d+)/i); if(sm)serves=Number(sm[1]);
+    if(/^(ingredients?|what you need|ingredients? list)\b/i.test(line)){section='ingredients';continue}
+    if(/^(method|instructions?|directions?|steps?|how to make)\b/i.test(line)){section='method';continue}
     if(section==='ingredients') ingredients.push(line.replace(/^[-•*]\s*/,''));
     else if(section==='method') method.push(line.replace(/^\d+[.)]\s*/,''));
   }
-  // If no headings, make a useful best-effort split: numbered lines are method, bullet lines ingredients.
+  if(!time && explicitTimes.length)time=Math.max(...explicitTimes);
+  // If no overall time was supplied, a practical best estimate is the sum of distinct method timings.
+  if((!explicitTimes.length || time===30) && !/\b(?:total|ready in|cooking time|cook time|prep time)\b/i.test(all)){
+    const mins=[...all.matchAll(/\b(\d+)\s*(?:mins?|minutes?)\b/ig)].map(m=>Number(m[1])).filter(n=>n>0&&n<=180);
+    const uniq=[...new Set(mins)];
+    if(uniq.length)time=Math.min(180,uniq.reduce((a,b)=>a+b,0));
+  }
   if(!ingredients.length){ingredients=lines.filter(x=>/^[-•*]\s+/.test(x)).map(x=>x.replace(/^[-•*]\s+/,''));}
   if(!method.length){method=lines.filter(x=>/^\d+[.)]\s+/.test(x)).map(x=>x.replace(/^\d+[.)]\s+/,''));}
   ingredients=ingredients.filter(x=>x.length>1 && !/^(method|instructions?|directions?|steps?)$/i.test(x));
   method=method.filter(x=>x.length>1);
-  return {name,cat,time:time||30,serves:serves||2,vegan:/vegan|plant[- ]based/i.test(text),photo:'',ingredients,method,notes:'Imported recipe — check ingredients and method.'};
+  const vegan=/vegan|plant[- ]based/i.test(text);
+  cat=detectCategory(text,name);
+  return {name:name.replace(/\s*\([^)]*\)\s*$/,''),cat,time:time||30,serves:serves||2,vegan,photo:'',ingredients,method,notes:'Imported recipe — check ingredients and method.'};
 }
-function importModal(){openModal(`<h2>📥 Import a recipe</h2><p class="meta">Paste a recipe URL or paste the recipe text below. If a website blocks access, use the text box — it works without needing the website to allow access.</p><div class="form"><label>Recipe URL</label><input id="importUrl" type="url" placeholder="https://example.com/recipe"><button class="btn secondary" type="button" data-action="fetchRecipe">Try import from URL</button><div style="height:12px"></div><label>Or paste recipe text</label><textarea id="importText" placeholder="Paste the recipe here…\n\nIngredients\n200g tofu\n1 pepper\n\nMethod\nPress and cube the tofu.\nFry until golden."></textarea><button class="btn" type="button" data-action="parseImport">Create recipe from this</button></div>`)}
+
+function importModal(){openModal(`<h2>📥 Import a recipe</h2><p class="meta">Paste a recipe URL or paste the recipe text below. The importer will automatically detect the name, category, time, servings and vegan status where possible.</p><div class="form"><label>Recipe URL</label><input id="importUrl" type="url" placeholder="https://example.com/recipe"><button class="btn secondary" type="button" data-action="fetchRecipe">Try import from URL</button><div style="height:12px"></div><label>Or paste recipe text</label><textarea id="importText" placeholder="Paste the recipe here…\n\nIngredients\n200g tofu\n1 pepper\n\nMethod\nPress and cube the tofu.\nFry until golden."></textarea><button class="btn" type="button" data-action="parseImport">Create recipe from this</button></div>`)}
 async function fetchRecipe(){const url=cleanText($('importUrl').value);if(!url){alert('Paste a recipe URL first.');return}let lastError=null;try{const res=await fetch(url,{mode:'cors'});if(!res.ok)throw new Error('Direct fetch failed');const html=await res.text();const doc=new DOMParser().parseFromString(html,'text/html');const scripts=[...doc.querySelectorAll('script[type="application/ld+json"]')];let recipe=null;for(const sc of scripts){try{recipe=parseJsonLd(JSON.parse(sc.textContent));if(recipe)break}catch(e){}}if(recipe){recipes.unshift({...recipe,favorite:false});save();closeModal();render();alert('Recipe imported. Check it over before cooking.');return}lastError=new Error('No recipe data')}catch(e){lastError=e}try{const proxy='https://r.jina.ai/http://'+url.replace(/^https?:\/\//,'');const res=await fetch(proxy);if(!res.ok)throw new Error('Reader failed');const text=await res.text();const recipe=parseRecipeText(text);if(!recipe||(!recipe.ingredients.length&&!recipe.method.length))throw new Error('No recipe content');recipes.unshift({...recipe,favorite:false});save();closeModal();render();alert('Recipe imported. Check the details before cooking.')}catch(e){alert('We could not read that recipe automatically. You can still copy the recipe from the website and paste it below — the app will create the recipe for you.')}}
 function parseImport(){const r=parseRecipeText($('importText').value);if(!r||(!r.ingredients.length&&!r.method.length)){alert('I could not find enough recipe information. Try pasting the recipe including the Ingredients and Method sections.');return}r.favorite=false;recipes.unshift(r);save();closeModal();render();alert('Recipe added. Check the details before cooking.')}
 function add(editIndex=null){const r=editIndex===null?{name:'',cat:'Quick',time:30,serves:2,vegan:true,photo:'',ingredients:[],method:[],notes:'',favorite:false}:recipes[editIndex];openModal(`<h2>${editIndex===null?'Add a recipe':'Edit recipe'}</h2><div class="form"><label>Name</label><input id="n" value="${esc(r.name)}"><label>Category</label><select id="c"><option value="Quick" ${r.cat==='Quick'?'selected':''}>Quick Meals</option><option value="Curry" ${r.cat==='Curry'?'selected':''}>Curries</option><option value="Fakeaway" ${r.cat==='Fakeaway'?'selected':''}>Fakeaways</option><option value="Breakfast" ${r.cat==='Breakfast'?'selected':''}>Breakfast</option><option value="Christmas" ${r.cat==='Christmas'?'selected':''}>Christmas</option><option value="Other" ${r.cat==='Other'?'selected':''}>Other</option></select><label>Time (minutes)</label><input id="t" type="number" value="${r.time}"><label>Servings</label><input id="s" type="number" value="${r.serves}"><label>Recipe photo</label><div class="photo-pick"><input id="photoFile" type="file" accept="image/*"><button class="btn secondary" type="button" data-action="removePhoto">Remove photo</button></div><div id="photoBox">${r.photo?`<img class="photo-preview" src="${esc(r.photo)}" alt="Recipe photo">`:''}</div><input id="p" type="hidden" value="${esc(r.photo||'')}"><label><input id="v" type="checkbox" ${r.vegan?'checked':''}> Vegan</label><br><br><label>Ingredients — one per line</label><textarea id="ing">${esc(r.ingredients.join('\n'))}</textarea><label>Method — one step per line</label><textarea id="met">${esc(r.method.join('\n'))}</textarea><label>My notes</label><textarea id="notes">${esc(r.notes||'')}</textarea><button class="btn" data-action="saveRecipe" data-index="${editIndex===null?'':editIndex}">Save recipe</button></div>`);$('n').focus();$('photoFile').addEventListener('change',handlePhoto)}
