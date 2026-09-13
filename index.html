@@ -1,63 +1,25 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2f8f3b">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Paul's Recipe Box</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f5f7f4;color:#17211b;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.app{max-width:900px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.brand{font-size:24px;font-weight:800}.sub{color:#68736b;font-size:13px}.search{width:100%;padding:14px 16px;border:1px solid #e1e7e1;border-radius:16px;font-size:16px;background:white;margin:14px 0}
-button{font:inherit}.btn{border:0;background:#2f8f3b;color:#fff;padding:11px 15px;border-radius:12px;font-weight:700;cursor:pointer}.btn.secondary{background:#eaf1ea;color:#245b2b}
-.chips{display:flex;gap:8px;overflow:auto;padding-bottom:8px}.chip{border:0;background:#e8f3e9;color:#246d2d;border-radius:999px;padding:9px 13px;white-space:nowrap;cursor:pointer}
-.hero{background:linear-gradient(135deg,#dff1df,#f8fbf7);border-radius:22px;padding:20px;margin:12px 0 20px}.hero h2{margin:0 0 6px}.hero p{margin:0;color:#68736b}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.card{background:#fff;border:1px solid #e1e7e1;border-radius:18px;padding:16px;box-shadow:0 3px 12px #1a2b1a0b}
-.card h3{margin:0 0 7px}.meta{color:#68736b;font-size:13px}.tag{display:inline-block;background:#edf6ee;color:#2d7835;padding:5px 8px;border-radius:8px;font-size:12px;margin-top:10px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.section{margin:20px 0 10px}.empty{padding:30px;text-align:center;color:#68736b}
-.modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;justify-content:center;z-index:5}.modal.show{display:flex}.sheet{background:#fff;width:min(900px,100%);border-radius:24px 24px 0 0;padding:22px;max-height:90vh;overflow:auto}.close{float:right;border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:20px;cursor:pointer}
-.form input,.form textarea{width:100%;padding:12px;border:1px solid #e1e7e1;border-radius:12px;margin:6px 0 12px;font:inherit}.form textarea{min-height:120px}.footer{text-align:center;color:#68736b;padding:30px 0 10px;font-size:12px}
- .favorite{font-size:26px;border:0;background:none;cursor:pointer}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.shopping{background:#fffdf0;border:1px solid #eee7bd;border-radius:14px;padding:12px;margin-top:16px}.btn.danger{background:#f3e9e9;color:#9a3333}
+:root{--g:#2f8f3b;--bg:#f5f7f4;--card:#fff;--text:#17211b;--muted:#68736b;--line:#e4e9e4}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text)}button{font:inherit}.app{max-width:900px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.brand{font-size:25px;font-weight:800}.sub{color:var(--muted);font-size:13px}.search{width:100%;padding:14px 16px;border:1px solid var(--line);border-radius:16px;font-size:16px;margin:10px 0 16px}.chips{display:flex;gap:8px;overflow:auto;padding-bottom:8px}.chip{border:0;background:#e8f3e9;color:#246d2d;border-radius:999px;padding:9px 13px;white-space:nowrap;cursor:pointer}.chip.active{background:var(--g);color:white}.hero{background:linear-gradient(135deg,#dff1df,#f8fbf7);border-radius:22px;padding:20px;margin:12px 0 20px}.hero h2{margin:0 0 6px}.hero p{margin:0;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 3px 12px #1a2b1a0b}.card h3{margin:0 0 7px}.meta{color:var(--muted);font-size:13px}.tag{display:inline-block;background:#edf6ee;color:#2d7835;padding:5px 8px;border-radius:8px;font-size:12px;margin-top:10px}.btn{border:0;background:var(--g);color:#fff;padding:11px 15px;border-radius:12px;font-weight:700;cursor:pointer}.btn.secondary{background:#edf2ed;color:#244b2a}.btn.danger{background:#f5e8e8;color:#9a3c3c}.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.section{margin:20px 0 10px}.empty{padding:30px;text-align:center;color:var(--muted);grid-column:1/-1}.modal{position:fixed;inset:0;background:#0008;display:none;align-items:end;justify-content:center;z-index:20}.modal.show{display:flex}.sheet{background:#fff;width:min(900px,100%);border-radius:24px 24px 0 0;padding:22px;max-height:90vh;overflow:auto}.close{float:right;border:0;background:#eee;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:20px}.favorite{border:0;background:transparent;font-size:36px;line-height:1;color:#3f8cf5;cursor:pointer}.ingredients li{margin:8px 0}.method li{margin:12px 0}.form input,.form textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;margin:6px 0 12px;font:inherit}.form textarea{min-height:130px}.shopping{background:#fffced;border:1px solid #eee1a9;border-radius:18px;padding:14px;margin:18px 0}.actions{display:flex;gap:10px;flex-wrap:wrap}.actions .btn:first-child{flex:1}.footer{text-align:center;color:var(--muted);padding:30px 0 10px;font-size:12px}@media(max-width:600px){.app{padding:15px}.brand{font-size:22px}.actions .btn{flex:auto}}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="top">
-    <div><div class="brand">🌿 Paul's Recipe Box</div><div class="sub">Good food. A happier you.</div></div>
-    <button id="addBtn" class="btn">＋ Add</button>
-  </div>
-
-  <input id="search" class="search" placeholder="🔎 Search recipes or ingredients…">
-
-  <div class="chips" id="chips">
-    <button class="chip" data-cat="All">All</button>
-    <button class="chip" data-cat="Quick">Quick Meals</button>
-    <button class="chip" data-cat="Curry">Curries</button>
-    <button class="chip" data-cat="Fakeaway">Fakeaways</button>
-    <button class="chip" data-cat="Breakfast">Breakfast</button>
-    <button class="chip" data-cat="Christmas">Christmas</button>
-  </div>
-
-  <div class="hero">
-    <h2>What can I make?</h2><p>Enter ingredients you have and we'll find matching recipes.</p>
-    <input id="have" class="search" style="margin:13px 0 0" placeholder="e.g. tofu, mushrooms, peppers">
-    <div id="matches"></div>
-  </div>
-
-  <div class="row section"><h2 style="margin:0">Your recipes</h2><span id="count" class="meta"></span></div>
-  <div id="recipes" class="grid"></div>
-  <div class="footer">V1 • Recipes are saved on this device</div>
+<div class="top"><div><div class="brand">🌿 Paul's Recipe Box</div><div class="sub">Good food. A happier you.</div></div><button id="addBtn" class="btn" type="button">＋ Add</button></div>
+<input id="search" class="search" placeholder="🔎 Search recipes or ingredients…" autocomplete="off">
+<div class="chips" id="chips"><button class="chip active" type="button" data-cat="All">All</button><button class="chip" type="button" data-cat="Quick">Quick Meals</button><button class="chip" type="button" data-cat="Curry">Curries</button><button class="chip" type="button" data-cat="Fakeaway">Fakeaways</button><button class="chip" type="button" data-cat="Breakfast">Breakfast</button><button class="chip" type="button" data-cat="Christmas">Christmas</button></div>
+<div class="hero"><h2>What can I make?</h2><p>Enter ingredients you have and we'll find matching recipes.</p><input id="have" class="search" style="margin:13px 0 0;background:#fff" placeholder="e.g. tofu, mushrooms, peppers" autocomplete="off"><div id="matches" style="margin-top:10px"></div></div>
+<div class="row section"><h2 style="margin:0">Your recipes</h2><span id="count" class="meta"></span></div><div id="recipes" class="grid"></div>
+<div class="footer">V3 • Recipes are saved in this browser</div>
 </div>
-
-<div id="modal" class="modal">
-  <div class="sheet">
-    <button id="closeBtn" class="close">×</button>
-    <div id="modalContent"></div>
-  </div>
-</div>
-
+<div id="modal" class="modal" role="dialog" aria-modal="true"><div class="sheet"><button id="closeBtn" class="close" type="button" aria-label="Close">×</button><div id="modalContent"></div></div></div>
 <script>
-"use strict";
+'use strict';
 const starterRecipes=[
 {name:'Tofu Stir Fry',cat:'Quick',time:20,serves:2,vegan:true,favorite:false,photo:'',ingredients:['200g firm tofu','1 red pepper','250g mushrooms','150g noodles','2 spring onions','1 tbsp soy sauce','1 tbsp sesame oil'],method:['Press and cube the tofu.','Fry tofu until golden.','Add peppers and mushrooms and cook until softened.','Add noodles, soy sauce and sesame oil. Toss together and serve.'],notes:'Great quick midweek meal.'},
 {name:'Lentil Curry',cat:'Curry',time:35,serves:4,vegan:true,favorite:false,photo:'',ingredients:['200g red lentils','1 onion','2 garlic cloves','400ml chopped tomatoes','400ml coconut milk','2 tsp curry powder'],method:['Soften onion and garlic.','Add curry powder and cook for 1 minute.','Add lentils, tomatoes and coconut milk.','Simmer until thick and the lentils are tender.'],notes:''},
@@ -65,17 +27,20 @@ const starterRecipes=[
 {name:'Mushroom Risotto',cat:'Quick',time:35,serves:2,vegan:true,favorite:false,photo:'',ingredients:['200g risotto rice','250g mushrooms','1 onion','750ml vegetable stock','2 tbsp nutritional yeast','1 tbsp olive oil'],method:['Cook onion and mushrooms.','Add rice and stir for 1 minute.','Add stock gradually, stirring until absorbed and creamy.','Stir through nutritional yeast and serve.'],notes:''},
 {name:'Satay Tofu Bowl',cat:'Fakeaway',time:30,serves:2,vegan:true,favorite:false,photo:'',ingredients:['250g tofu','1 red pepper','150g rice','2 tbsp peanut butter','1 tbsp soy sauce','1 tbsp maple syrup','Lime'],method:['Cook rice.','Crisp the tofu in a pan.','Mix peanut butter, soy, maple syrup and a splash of water into a sauce.','Add pepper and sauce to tofu, then serve over rice.'],notes:''}
 ];
-let recipes=[];let cat='All';let shopping=[];
-try{const a=JSON.parse(localStorage.getItem('prb-v2-recipes'));recipes=Array.isArray(a)&&a.length?a:structuredClone(starterRecipes);shopping=JSON.parse(localStorage.getItem('prb-shopping')||'[]')}catch(e){recipes=structuredClone(starterRecipes)}
+let recipes=[];let cat='All';let shopping=[];let currentRecipeIndex=null;let currentServings=null;
+try{const a=JSON.parse(localStorage.getItem('prb-v3-recipes')||localStorage.getItem('prb-v2-recipes')||'null');recipes=Array.isArray(a)&&a.length?a:structuredClone(starterRecipes);shopping=JSON.parse(localStorage.getItem('prb-shopping')||'[]')}catch(e){recipes=structuredClone(starterRecipes);shopping=[]}
 const $=id=>document.getElementById(id);const esc=s=>String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-function save(){try{localStorage.setItem('prb-v2-recipes',JSON.stringify(recipes));localStorage.setItem('prb-shopping',JSON.stringify(shopping))}catch(e){}}
-function closeModal(){$('modal').classList.remove('show')}
+function save(){try{localStorage.setItem('prb-v3-recipes',JSON.stringify(recipes));localStorage.setItem('prb-shopping',JSON.stringify(shopping))}catch(e){}}
+function closeModal(){currentRecipeIndex=null;currentServings=null;$('modal').classList.remove('show')}
 function openModal(c){$('modalContent').innerHTML=c;$('modal').classList.add('show')}
-function view(i){const r=recipes[i];if(!r)return;openModal(`<div class="row"><h1>${esc(r.name)}</h1><button class="favorite" data-action="fav" data-index="${i}">${r.favorite?'❤️':'♡'}</button></div>${r.photo?`<img src="${esc(r.photo)}" style="width:100%;max-height:240px;object-fit:cover;border-radius:18px" onerror="this.style.display='none'">`:''}<div class="meta">⏱ ${r.time} mins · 👥 <span id="servingValue">${r.serves}</span> · ${r.vegan?'🌿 Vegan':''}</div><div style="margin:14px 0"><button class="btn secondary" data-action="scaleDown" data-index="${i}">−</button> <button class="btn secondary" data-action="scaleUp" data-index="${i}">＋</button> <span class="meta">adjust servings</span></div><h3>Ingredients</h3><ul>${r.ingredients.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><h3>Method</h3><ol>${r.method.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>${r.notes?`<div class="shopping"><b>📝 My note</b><br>${esc(r.notes)}</div>`:''}<div class="actions"><button class="btn" data-action="shop" data-index="${i}">🛒 Add to shopping list</button><button class="btn secondary" data-action="edit" data-index="${i}">Edit</button><button class="btn danger" data-action="delete" data-index="${i}">Delete</button></div>`)}
+function niceNumber(n){return Number.isInteger(n)?String(n):String(Math.round(n*10)/10)}
+function scaleIngredient(text,baseServes,newServes){const m=text.match(/^(\d+(?:\.\d+)?)(.*)$/);if(!m)return text;const n=parseFloat(m[1]);return niceNumber(n*(newServes/baseServes))+m[2]}
+function view(i,servings){const r=recipes[i];if(!r)return;currentRecipeIndex=i;if(servings==null){currentServings=r.serves}else{currentServings=Math.max(1,servings)}const factor=currentServings/r.serves;openModal(`<div class="row"><h1>${esc(r.name)}</h1><button class="favorite" data-action="fav" data-index="${i}">${r.favorite?'❤️':'♡'}</button></div>${r.photo?`<img src="${esc(r.photo)}" style="width:100%;max-height:240px;object-fit:cover;border-radius:18px" onerror="this.style.display='none'">`:''}<div class="meta">⏱ ${r.time} mins · 👥 <span id="servingValue">${currentServings}</span> · ${r.vegan?'🌿 Vegan':''}</div><div style="margin:14px 0"><button class="btn secondary" data-action="scaleDown" data-index="${i}">−</button> <button class="btn secondary" data-action="scaleUp" data-index="${i}">＋</button> <span class="meta">adjust servings</span></div><h3>Ingredients</h3><ul>${r.ingredients.map(x=>`<li>${esc(scaleIngredient(x,r.serves,currentServings))}</li>`).join('')}</ul><h3>Method</h3><ol>${r.method.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>${r.notes?`<div class="shopping"><b>📝 My note</b><br>${esc(r.notes)}</div>`:''}<div class="actions"><button class="btn" data-action="shop" data-index="${i}">🛒 Add to shopping list</button><button class="btn secondary" data-action="edit" data-index="${i}">Edit</button><button class="btn danger" data-action="delete" data-index="${i}">Delete</button></div>`)}
 function add(editIndex=null){const r=editIndex===null?{name:'',cat:'Quick',time:30,serves:2,vegan:true,photo:'',ingredients:[],method:[],notes:'',favorite:false}:recipes[editIndex];openModal(`<h2>${editIndex===null?'Add a recipe':'Edit recipe'}</h2><div class="form"><label>Name</label><input id="n" value="${esc(r.name)}"><label>Category</label><input id="c" value="${esc(r.cat)}"><label>Time (minutes)</label><input id="t" type="number" value="${r.time}"><label>Servings</label><input id="s" type="number" value="${r.serves}"><label>Photo URL (optional)</label><input id="p" value="${esc(r.photo||'')}"><label><input id="v" type="checkbox" ${r.vegan?'checked':''}> Vegan</label><br><br><label>Ingredients — one per line</label><textarea id="ing">${esc(r.ingredients.join('\n'))}</textarea><label>Method — one step per line</label><textarea id="met">${esc(r.method.join('\n'))}</textarea><label>My notes</label><textarea id="notes">${esc(r.notes||'')}</textarea><button class="btn" data-action="saveRecipe" data-index="${editIndex===null?'':editIndex}">Save recipe</button></div>`);$('n').focus()}
-function saveRecipe(i){const r={name:$('n').value.trim()||'Untitled recipe',cat:$('c').value.trim()||'Other',time:Number($('t').value)||30,serves:Number($('s').value)||2,vegan:$('v').checked,photo:$('p').value.trim(),ingredients:$('ing').value.split('\n').map(x=>x.trim()).filter(Boolean),method:$('met').value.split('\n').map(x=>x.trim()).filter(Boolean),notes:$('notes').value.trim(),favorite:i!==null?recipes[i].favorite:false};if(i===null)recipes.unshift(r);else recipes[i]=r;save();closeModal();render()}
+function saveRecipe(i){const r={name:$('n').value.trim()||'Untitled recipe',cat:$('c').value.trim()||'Other',time:Number($('t').value)||30,serves:Math.max(1,Number($('s').value)||2),vegan:$('v').checked,photo:$('p').value.trim(),ingredients:$('ing').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),method:$('met').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),notes:$('notes').value.trim(),favorite:i!==null?recipes[i].favorite:false};if(i===null)recipes.unshift(r);else recipes[i]=r;save();closeModal();render()}
 function render(){const q=$('search').value.toLowerCase().trim();const list=recipes.filter(r=>(cat==='All'||r.cat===cat)&&(!q||(r.name+' '+r.ingredients.join(' ')).toLowerCase().includes(q)));$('count').textContent=list.length+' recipe'+(list.length===1?'':'s');$('recipes').innerHTML=list.length?list.map(r=>{const i=recipes.indexOf(r);return `<div class="card"><div class="row"><h3>${esc(r.name)}</h3><button class="favorite" data-action="fav" data-index="${i}">${r.favorite?'❤️':'♡'}</button></div>${r.photo?`<img src="${esc(r.photo)}" style="width:100%;height:130px;object-fit:cover;border-radius:14px;margin:5px 0 10px" onerror="this.style.display='none'">`:''}<div class="meta">⏱ ${r.time} mins · 👥 ${r.serves} · ${r.vegan?'🌿 Vegan':''}</div><span class="tag">${esc(r.cat)}</span><div style="margin-top:14px"><button class="btn secondary" data-action="view" data-index="${i}">View recipe</button></div></div>`}).join(''):'<div class="empty">No recipes found.</div>';document.querySelectorAll('.chip').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat))}
 function matches(){const q=$('have').value.toLowerCase().split(',').map(x=>x.trim()).filter(Boolean);if(!q.length){$('matches').innerHTML='';return}const list=recipes.map(r=>({r,score:q.filter(x=>(r.name+' '+r.ingredients.join(' ')).toLowerCase().includes(x)).length})).filter(x=>x.score).sort((a,b)=>b.score-a.score);$('matches').innerHTML=list.length?list.slice(0,5).map(x=>`<div class="card" style="margin-top:8px;padding:12px"><b>${esc(x.r.name)}</b><span class="meta"> — ${x.score}/${q.length} ingredients matched</span><button class="btn secondary" data-action="view" data-index="${recipes.indexOf(x.r)}" style="float:right;padding:7px 10px">Open</button></div>`).join(''):'<div class="meta">Nothing matching yet.</div>'}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const a=b.dataset.action,i=b.dataset.index===''?null:Number(b.dataset.index);if(a==='add')add();if(a==='close')closeModal();if(a==='view')view(i);if(a==='fav'){recipes[i].favorite=!recipes[i].favorite;save();render();if($('modal').classList.contains('show'))view(i)}if(a==='edit')add(i);if(a==='saveRecipe')saveRecipe(i);if(a==='delete'){if(confirm('Delete this recipe?')){recipes.splice(i,1);save();closeModal();render()}}if(a==='shop'){shopping=[...shopping,...recipes[i].ingredients];save();alert('Ingredients added to your shopping list.')}if(a==='scaleUp'){recipes[i].serves++;save();view(i)}if(a==='scaleDown'){recipes[i].serves=Math.max(1,recipes[i].serves-1);save();view(i)}});
-$('search').addEventListener('input',render);$('have').addEventListener('input',matches);$('chips').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(b){cat=b.dataset.cat;render()}});$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});render();
-</script></body></html>
+document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const a=b.dataset.action,i=b.dataset.index===''?null:Number(b.dataset.index);if(a==='add')add();if(a==='close')closeModal();if(a==='view')view(i);if(a==='fav'){recipes[i].favorite=!recipes[i].favorite;save();render();if($('modal').classList.contains('show'))view(i,currentRecipeIndex===i?currentServings:null)}if(a==='edit')add(i);if(a==='saveRecipe')saveRecipe(i);if(a==='delete'){if(confirm('Delete this recipe?')){recipes.splice(i,1);save();closeModal();render()}}if(a==='shop'){shopping=[...shopping,...recipes[i].ingredients.map(x=>scaleIngredient(x,recipes[i].serves,currentRecipeIndex===i&&currentServings?currentServings:recipes[i].serves))];save();alert('Ingredients added to your shopping list.')}if(a==='scaleUp'){view(i,(currentRecipeIndex===i&&currentServings?currentServings:recipes[i].serves)+1)}if(a==='scaleDown'){view(i,(currentRecipeIndex===i&&currentServings?currentServings:recipes[i].serves)-1)}});
+$('addBtn').addEventListener('click',()=>add());$('closeBtn').addEventListener('click',closeModal);$('search').addEventListener('input',render);$('have').addEventListener('input',matches);$('chips').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(b){cat=b.dataset.cat;render()}});$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});render();
+</script>
+</body></html>
