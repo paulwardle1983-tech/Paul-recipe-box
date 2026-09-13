@@ -17,6 +17,7 @@ button{font:inherit}.btn{border:0;background:#2f8f3b;color:#fff;padding:11px 15p
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px}.section{margin:20px 0 10px}.empty{padding:30px;text-align:center;color:#68736b}
 .modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;justify-content:center;z-index:5}.modal.show{display:flex}.sheet{background:#fff;width:min(900px,100%);border-radius:24px 24px 0 0;padding:22px;max-height:90vh;overflow:auto}.close{float:right;border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:20px;cursor:pointer}
 .form input,.form textarea{width:100%;padding:12px;border:1px solid #e1e7e1;border-radius:12px;margin:6px 0 12px;font:inherit}.form textarea{min-height:120px}.footer{text-align:center;color:#68736b;padding:30px 0 10px;font-size:12px}
+ .favorite{font-size:26px;border:0;background:none;cursor:pointer}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.shopping{background:#fffdf0;border:1px solid #eee7bd;border-radius:14px;padding:12px;margin-top:16px}.btn.danger{background:#f3e9e9;color:#9a3333}
 </style>
 </head>
 <body>
@@ -58,71 +59,23 @@ button{font:inherit}.btn{border:0;background:#2f8f3b;color:#fff;padding:11px 15p
 <script>
 "use strict";
 const starterRecipes=[
-{name:"Tofu Stir Fry",cat:"Quick",time:20,serves:2,vegan:true,ingredients:["200g firm tofu","1 red pepper","250g mushrooms","150g noodles","2 spring onions","1 tbsp soy sauce","1 tbsp sesame oil"],method:["Press and cube the tofu.","Fry tofu until golden.","Add peppers and mushrooms and cook until softened.","Add noodles, soy sauce and sesame oil. Toss together and serve."]},
-{name:"Lentil Curry",cat:"Curry",time:35,serves:4,vegan:true,ingredients:["200g red lentils","1 onion","2 garlic cloves","400ml chopped tomatoes","400ml coconut milk","2 tsp curry powder"],method:["Soften onion and garlic.","Add curry powder and cook for 1 minute.","Add lentils, tomatoes and coconut milk.","Simmer until thick and the lentils are tender."]},
-{name:"Overnight Oats",cat:"Breakfast",time:5,serves:1,vegan:true,ingredients:["50g oats","150ml oat milk","1 tbsp peanut butter","1 tbsp maple syrup","Berries"],method:["Mix oats, oat milk, peanut butter and maple syrup.","Chill overnight.","Top with berries before eating."]}
+{name:'Tofu Stir Fry',cat:'Quick',time:20,serves:2,vegan:true,favorite:false,photo:'',ingredients:['200g firm tofu','1 red pepper','250g mushrooms','150g noodles','2 spring onions','1 tbsp soy sauce','1 tbsp sesame oil'],method:['Press and cube the tofu.','Fry tofu until golden.','Add peppers and mushrooms and cook until softened.','Add noodles, soy sauce and sesame oil. Toss together and serve.'],notes:'Great quick midweek meal.'},
+{name:'Lentil Curry',cat:'Curry',time:35,serves:4,vegan:true,favorite:false,photo:'',ingredients:['200g red lentils','1 onion','2 garlic cloves','400ml chopped tomatoes','400ml coconut milk','2 tsp curry powder'],method:['Soften onion and garlic.','Add curry powder and cook for 1 minute.','Add lentils, tomatoes and coconut milk.','Simmer until thick and the lentils are tender.'],notes:''},
+{name:'Overnight Oats',cat:'Breakfast',time:5,serves:1,vegan:true,favorite:false,photo:'',ingredients:['50g oats','150ml oat milk','1 tbsp peanut butter','1 tbsp maple syrup','Berries'],method:['Mix oats, oat milk, peanut butter and maple syrup.','Chill overnight.','Top with berries before eating.'],notes:''},
+{name:'Mushroom Risotto',cat:'Quick',time:35,serves:2,vegan:true,favorite:false,photo:'',ingredients:['200g risotto rice','250g mushrooms','1 onion','750ml vegetable stock','2 tbsp nutritional yeast','1 tbsp olive oil'],method:['Cook onion and mushrooms.','Add rice and stir for 1 minute.','Add stock gradually, stirring until absorbed and creamy.','Stir through nutritional yeast and serve.'],notes:''},
+{name:'Satay Tofu Bowl',cat:'Fakeaway',time:30,serves:2,vegan:true,favorite:false,photo:'',ingredients:['250g tofu','1 red pepper','150g rice','2 tbsp peanut butter','1 tbsp soy sauce','1 tbsp maple syrup','Lime'],method:['Cook rice.','Crisp the tofu in a pan.','Mix peanut butter, soy, maple syrup and a splash of water into a sauce.','Add pepper and sauce to tofu, then serve over rice.'],notes:''}
 ];
-
-let recipes=[];
-let cat="All";
-try{const saved=JSON.parse(localStorage.getItem("prb-recipes"));recipes=Array.isArray(saved)&&saved.length?saved:structuredClone(starterRecipes)}catch(e){recipes=structuredClone(starterRecipes)}
-
-const $=id=>document.getElementById(id);
-const esc=s=>String(s).replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
-function save(){try{localStorage.setItem("prb-recipes",JSON.stringify(recipes))}catch(e){}}
-function openModal(content){$("modalContent").innerHTML=content;$("modal").classList.add("show")}
-function closeModal(){$("modal").classList.remove("show")}
-
-function viewRecipe(i){
- const r=recipes[i]; if(!r)return;
- openModal(`<h1>${esc(r.name)}</h1><div class="meta">⏱ ${r.time} mins · 👥 ${r.serves} · ${r.vegan?"🌿 Vegan":""}</div>
- <h3>Ingredients</h3><ul>${r.ingredients.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
- <h3>Method</h3><ol>${r.method.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>
- <button class="btn" data-action="close">Done</button>`);
-}
-function openAdd(){
- openModal(`<h2>Add a recipe</h2><div class="form">
- <label>Name</label><input id="n">
- <label>Category</label><input id="c" placeholder="Quick, Curry, Breakfast…">
- <label>Time (minutes)</label><input id="t" type="number" value="30">
- <label>Servings</label><input id="s" type="number" value="2">
- <label>Ingredients (one per line)</label><textarea id="ing"></textarea>
- <label>Method (one step per line)</label><textarea id="met"></textarea>
- <button class="btn" data-action="saveRecipe">Save recipe</button></div>`);
- $("n").focus();
-}
-function addRecipe(){
- const r={name:$("n").value.trim()||"Untitled recipe",cat:$("c").value.trim()||"Other",time:Number($("t").value)||30,serves:Number($("s").value)||2,vegan:true,
- ingredients:$("ing").value.split("\n").map(x=>x.trim()).filter(Boolean),
- method:$("met").value.split("\n").map(x=>x.trim()).filter(Boolean)};
- recipes.unshift(r);save();closeModal();render();
-}
-function render(){
- const q=$("search").value.toLowerCase().trim();
- const list=recipes.filter(r=>(cat==="All"||r.cat===cat)&&(!q||(r.name+" "+r.ingredients.join(" ")).toLowerCase().includes(q)));
- $("count").textContent=list.length+" recipe"+(list.length===1?"":"s");
- $("recipes").innerHTML=list.length?list.map(r=>{const i=recipes.indexOf(r);return `<div class="card"><h3>${esc(r.name)}</h3><div class="meta">⏱ ${r.time} mins · 👥 ${r.serves} · ${r.vegan?"🌿 Vegan":""}</div><span class="tag">${esc(r.cat)}</span><div style="margin-top:14px"><button class="btn secondary" data-action="view" data-index="${i}">View recipe</button></div></div>`}).join(""):'<div class="empty">No recipes found.</div>';
-}
-function renderMatches(){
- const q=$("have").value.toLowerCase().split(",").map(x=>x.trim()).filter(Boolean);
- if(!q.length){$("matches").innerHTML="";return}
- const list=recipes.map(r=>({r,score:q.filter(x=>(r.name+" "+r.ingredients.join(" ")).toLowerCase().includes(x)).length})).filter(x=>x.score).sort((a,b)=>b.score-a.score);
- $("matches").innerHTML=list.length?list.slice(0,4).map(x=>`<div class="card" style="margin-top:8px;padding:12px"><b>${esc(x.r.name)}</b><span class="meta"> — matches ${x.score}/${q.length}</span> <button class="btn secondary" data-action="view" data-index="${recipes.indexOf(x.r)}" style="float:right;padding:7px 10px">Open</button></div>`).join(""):'<div class="meta" style="padding-top:10px">Nothing matching yet — try another ingredient.</div>';
-}
-
-$("addBtn").addEventListener("click",openAdd);
-$("closeBtn").addEventListener("click",closeModal);
-$("search").addEventListener("input",render);
-$("have").addEventListener("input",renderMatches);
-$("chips").addEventListener("click",e=>{const b=e.target.closest("[data-cat]");if(b){cat=b.dataset.cat;render()}});
-$("modal").addEventListener("click",e=>{if(e.target===$("modal"))closeModal()});
-document.addEventListener("click",e=>{
- const b=e.target.closest("[data-action]"); if(!b)return;
- if(b.dataset.action==="view")viewRecipe(Number(b.dataset.index));
- if(b.dataset.action==="saveRecipe")addRecipe();
- if(b.dataset.action==="close")closeModal();
-});
-render();
-</script>
-</body>
-</html>
+let recipes=[];let cat='All';let shopping=[];
+try{const a=JSON.parse(localStorage.getItem('prb-v2-recipes'));recipes=Array.isArray(a)&&a.length?a:structuredClone(starterRecipes);shopping=JSON.parse(localStorage.getItem('prb-shopping')||'[]')}catch(e){recipes=structuredClone(starterRecipes)}
+const $=id=>document.getElementById(id);const esc=s=>String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+function save(){try{localStorage.setItem('prb-v2-recipes',JSON.stringify(recipes));localStorage.setItem('prb-shopping',JSON.stringify(shopping))}catch(e){}}
+function closeModal(){$('modal').classList.remove('show')}
+function openModal(c){$('modalContent').innerHTML=c;$('modal').classList.add('show')}
+function view(i){const r=recipes[i];if(!r)return;openModal(`<div class="row"><h1>${esc(r.name)}</h1><button class="favorite" data-action="fav" data-index="${i}">${r.favorite?'❤️':'♡'}</button></div>${r.photo?`<img src="${esc(r.photo)}" style="width:100%;max-height:240px;object-fit:cover;border-radius:18px" onerror="this.style.display='none'">`:''}<div class="meta">⏱ ${r.time} mins · 👥 <span id="servingValue">${r.serves}</span> · ${r.vegan?'🌿 Vegan':''}</div><div style="margin:14px 0"><button class="btn secondary" data-action="scaleDown" data-index="${i}">−</button> <button class="btn secondary" data-action="scaleUp" data-index="${i}">＋</button> <span class="meta">adjust servings</span></div><h3>Ingredients</h3><ul>${r.ingredients.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><h3>Method</h3><ol>${r.method.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>${r.notes?`<div class="shopping"><b>📝 My note</b><br>${esc(r.notes)}</div>`:''}<div class="actions"><button class="btn" data-action="shop" data-index="${i}">🛒 Add to shopping list</button><button class="btn secondary" data-action="edit" data-index="${i}">Edit</button><button class="btn danger" data-action="delete" data-index="${i}">Delete</button></div>`)}
+function add(editIndex=null){const r=editIndex===null?{name:'',cat:'Quick',time:30,serves:2,vegan:true,photo:'',ingredients:[],method:[],notes:'',favorite:false}:recipes[editIndex];openModal(`<h2>${editIndex===null?'Add a recipe':'Edit recipe'}</h2><div class="form"><label>Name</label><input id="n" value="${esc(r.name)}"><label>Category</label><input id="c" value="${esc(r.cat)}"><label>Time (minutes)</label><input id="t" type="number" value="${r.time}"><label>Servings</label><input id="s" type="number" value="${r.serves}"><label>Photo URL (optional)</label><input id="p" value="${esc(r.photo||'')}"><label><input id="v" type="checkbox" ${r.vegan?'checked':''}> Vegan</label><br><br><label>Ingredients — one per line</label><textarea id="ing">${esc(r.ingredients.join('\n'))}</textarea><label>Method — one step per line</label><textarea id="met">${esc(r.method.join('\n'))}</textarea><label>My notes</label><textarea id="notes">${esc(r.notes||'')}</textarea><button class="btn" data-action="saveRecipe" data-index="${editIndex===null?'':editIndex}">Save recipe</button></div>`);$('n').focus()}
+function saveRecipe(i){const r={name:$('n').value.trim()||'Untitled recipe',cat:$('c').value.trim()||'Other',time:Number($('t').value)||30,serves:Number($('s').value)||2,vegan:$('v').checked,photo:$('p').value.trim(),ingredients:$('ing').value.split('\n').map(x=>x.trim()).filter(Boolean),method:$('met').value.split('\n').map(x=>x.trim()).filter(Boolean),notes:$('notes').value.trim(),favorite:i!==null?recipes[i].favorite:false};if(i===null)recipes.unshift(r);else recipes[i]=r;save();closeModal();render()}
+function render(){const q=$('search').value.toLowerCase().trim();const list=recipes.filter(r=>(cat==='All'||r.cat===cat)&&(!q||(r.name+' '+r.ingredients.join(' ')).toLowerCase().includes(q)));$('count').textContent=list.length+' recipe'+(list.length===1?'':'s');$('recipes').innerHTML=list.length?list.map(r=>{const i=recipes.indexOf(r);return `<div class="card"><div class="row"><h3>${esc(r.name)}</h3><button class="favorite" data-action="fav" data-index="${i}">${r.favorite?'❤️':'♡'}</button></div>${r.photo?`<img src="${esc(r.photo)}" style="width:100%;height:130px;object-fit:cover;border-radius:14px;margin:5px 0 10px" onerror="this.style.display='none'">`:''}<div class="meta">⏱ ${r.time} mins · 👥 ${r.serves} · ${r.vegan?'🌿 Vegan':''}</div><span class="tag">${esc(r.cat)}</span><div style="margin-top:14px"><button class="btn secondary" data-action="view" data-index="${i}">View recipe</button></div></div>`}).join(''):'<div class="empty">No recipes found.</div>';document.querySelectorAll('.chip').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat))}
+function matches(){const q=$('have').value.toLowerCase().split(',').map(x=>x.trim()).filter(Boolean);if(!q.length){$('matches').innerHTML='';return}const list=recipes.map(r=>({r,score:q.filter(x=>(r.name+' '+r.ingredients.join(' ')).toLowerCase().includes(x)).length})).filter(x=>x.score).sort((a,b)=>b.score-a.score);$('matches').innerHTML=list.length?list.slice(0,5).map(x=>`<div class="card" style="margin-top:8px;padding:12px"><b>${esc(x.r.name)}</b><span class="meta"> — ${x.score}/${q.length} ingredients matched</span><button class="btn secondary" data-action="view" data-index="${recipes.indexOf(x.r)}" style="float:right;padding:7px 10px">Open</button></div>`).join(''):'<div class="meta">Nothing matching yet.</div>'}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const a=b.dataset.action,i=b.dataset.index===''?null:Number(b.dataset.index);if(a==='add')add();if(a==='close')closeModal();if(a==='view')view(i);if(a==='fav'){recipes[i].favorite=!recipes[i].favorite;save();render();if($('modal').classList.contains('show'))view(i)}if(a==='edit')add(i);if(a==='saveRecipe')saveRecipe(i);if(a==='delete'){if(confirm('Delete this recipe?')){recipes.splice(i,1);save();closeModal();render()}}if(a==='shop'){shopping=[...shopping,...recipes[i].ingredients];save();alert('Ingredients added to your shopping list.')}if(a==='scaleUp'){recipes[i].serves++;save();view(i)}if(a==='scaleDown'){recipes[i].serves=Math.max(1,recipes[i].serves-1);save();view(i)}});
+$('search').addEventListener('input',render);$('have').addEventListener('input',matches);$('chips').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(b){cat=b.dataset.cat;render()}});$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});render();
+</script></body></html>
